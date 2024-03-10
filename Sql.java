@@ -24,11 +24,23 @@ public class Sql {
         }
     }
 
-    public static void update_statement(String id, String name) {
+    public static void update_statement_name(String id, String name) {
         String sqlupdate = "UPDATE students SET name=?  WHERE id =? ";
         try {
             PreparedStatement pst = connect.prepareStatement(sqlupdate);
             pst.setString(1, name);
+            pst.setString(2, id);
+            pst.execute();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    public static void update_statement_phone(String id, String phone) {
+        String sqlupdate = "UPDATE students SET phone=?  WHERE id =? ";
+        try {
+            PreparedStatement pst = connect.prepareStatement(sqlupdate);
+            pst.setString(1, phone);
             pst.setString(2, id);
             pst.execute();
         } catch (SQLException e) {

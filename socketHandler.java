@@ -34,25 +34,50 @@ public class socketHandler extends Thread {
                 try {
                     String option = (String) inFromClient.readObject();
                     Student s = null;
+                    String answer="";
                     switch (option) {
                         case "1":
                             s = (Student) inFromClient.readObject();
-                            sql.insert_statement(s.id, s.name, s.phone);
-                            outToClient.writeBytes("it was ok everything here\n");
+                             answer = sql.select(s.id);
+                            if(answer.equals("student do not exist!")){
+                                sql.insert_statement(s.id, s.name, s.phone);
+                                outToClient.writeBytes("student added\n");
+                            }else   {
+                                outToClient.writeBytes("error, student may already exist\n");
+                            }
                             break;
                         case "2":
                             s = (Student) inFromClient.readObject();
-                            String answer = sql.select(s.id);
+                             answer = sql.select(s.id);
                             outToClient.writeBytes(answer + "\n");
                             break;
                         case "3":
                             s = (Student) inFromClient.readObject();
-                            sql.delete_statement(s.id);
-                            outToClient.writeBytes("student deleted\n");
+                            answer = sql.select(s.id);
+                            if(answer.equals("student do not exist!")){
+                                outToClient.writeBytes(answer+"\n");
+                            }else{
+                                sql.delete_statement(s.id);
+                                outToClient.writeBytes("student deleted\n");
+                            }
                             break;
                         case "4":
                             s = (Student) inFromClient.readObject();
-                            sql.update_statement(s.id, s.name);
+                            answer = sql.select(s.id);
+                            if(answer.equals("student do not exist!")){
+                                outToClient.writeBytes(answer+"\n");
+                                break;
+                            }else{
+                                if (s.name == null && s.phone == null){
+                                    outToClient.writeBytes("error, info can not be null\n");
+                                    break;
+                                }
+                                if (s.name != null ) {
+                                    sql.update_statement_name(s.id, s.name);
+                                }
+                                if (s.phone != null )
+                                    sql.update_statement_phone(s.id, s.phone);
+                            }
                             outToClient.writeBytes("student info updated\n");
                             break;
                     }
